@@ -32,4 +32,4 @@ tasks:
   run:
     deps: [build]
     cmds:
-      - docker run "{{.IMAGE}}"
+      - docker run "{{.IMAGE_UNTRUSTED}}"
