@@ -1,0 +1,15 @@
+version: "2"
+
+vars:
+  IMAGE: "ggilmore/docker-trust-test"
+  TAG: "latest"
+
+tasks:
+  build:
+    cmds:
+      - docker build . -t "{{.IMAGE}}:{{.TAG}}"
+
+  push:
+    deps: [build]
+    cmds:
+      - docker push "{{.IMAGE}}:{{.TAG}}"
