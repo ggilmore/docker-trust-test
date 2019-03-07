@@ -1,15 +1,35 @@
 version: "2"
 
 vars:
-  IMAGE: "ggilmore/docker-trust-test"
-  TAG: "latest"
+  REPO: "ggilmore/docker-trust-test"
+  IMAGE_UNTRUSTED: "{{.REPO}}:untrusted"
+  IMAGE_TRUSTED: "{{.REPO}}:trusted"
+
+output: "group"
 
 tasks:
   build:
     cmds:
-      - docker build . -t "{{.IMAGE}}:{{.TAG}}"
+      - docker build . -t "{{.IMAGE_UNTRUSTED}}" -t "{{.IMAGE_TRUSTED}}"
 
   push:
+    deps: [push-untrusted, push-trusted]
+
+  push-trusted:
+    deps: [build]
+    env:
+      DOCKER_CONTENT_TRUST: true
+    cmds:
+      - docker push "{{.IMAGE_TRUSTED}}"
+
+  push-untrusted:
+    deps: [build]
+    env:
+      DOCKER_CONTENT_TRUST: false
+    cmds:
+      - docker push "{{.IMAGE_UNTRUSTED}}"
+
+  run:
     deps: [build]
     cmds:
-      - docker push "{{.IMAGE}}:{{.TAG}}"
+      - docker run "{{.IMAGE}}"
